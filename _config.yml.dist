@@ -1,0 +1,19 @@
+title: Hourai
+description: Hourai is a general purpose, highly configurable Discord Bot
+show_downloads: false
+git_branch: gh-pages
+logo_url:
+google_analytics:
+theme:
+use_github_wiki: false
+use_prose_io: true
+google_cse_token:
+custom_head: false
+custom_sidebar: false
+custom_footer: false
+gems:
+  - jekyll-sitemap
+  - jekyll-mentions
+  - jemoji
+  - jekyll-redirect-from
+  - jekyll-feed
