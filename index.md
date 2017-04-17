@@ -1,7 +1,1 @@
----
-layout: default
----
-
-# Hourai
-
-Testing import
+wiki/Home.md
