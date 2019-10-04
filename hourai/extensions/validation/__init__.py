@@ -7,7 +7,7 @@ from discord.ext import tasks, commands
 from datetime import datetime, timedelta
 from hourai import utils
 from hourai.cogs import BaseCog
-from hourai.db import proxies, proto
+from hourai.db import proxies, proto, models
 from hourai.utils import format, embed, checks
 
 log = logging.getLogger(__name__)
@@ -23,6 +23,24 @@ APPROVE_REACTION = '\u2705'
 KICK_REACTION = '\u274C'
 BAN_REACTION = '\u2620'
 MODLOG_REACTIONS = (APPROVE_REACTION, KICK_REACTION, BAN_REACTION)
+
+
+USER_BOT_USERNAMES =
+OFFENSIVE_USERNAMES = ('nigger', 'nigga', 'faggot', 'cuck', 'retard', '卍',
+                       'ϟϟ', 'adolf', 'hitler')
+SEXUAL_USERNAMES = ('anal', 'cock', 'vore', 'scat', 'fuck', 'pussy', 'penis',
+                    'piss', 'shit', 'cum')
+
+
+def username_history(bot, user):
+    session = bot.create_storage_session()
+    with session:
+        query = session.query(models.Username.name) \
+                       .filter_by(user_id=user.id) \
+                       .all()
+        for username in query:
+            yield username[0]
+
 
 # TODO(james7132): Add per-server validation configuration.
 # TODO(james7132): Add filter for pornographic or violent avatars
@@ -90,13 +108,20 @@ VALIDATORS = (
     # Filter offensive usernames.
     rejectors.StringFilterRejector(
         prefix='Offensive username. ',
-        filters=['nigger', 'nigga', 'faggot', 'cuck', 'retard']),
+        filters=OFFENSIVE_USERNAMES),
+    rejectors.StringFilterRejector(
+        prefix='Offensive username. ',
+        filters=OFFENSIVE_USERNAMES,
+        subfield=username_history),
 
     # Filter sexually inapproriate usernames.
     rejectors.StringFilterRejector(
         prefix='Sexually inapproriate username. ',
-        filters=['anal', 'cock', 'vore', 'scat', 'fuck', 'pussy',
-                 'penis', 'piss', 'shit', 'cum']),
+        filters=SEXUAL_USERNAMES),
+    rejectors.StringFilterRejector(
+        prefix='Sexually inapproriate username. ',
+        filters=SEXUAL_USERNAMES,
+        subfield=username_history),
 
     # -----------------------------------------------------------------
     # Malicious Level Validators

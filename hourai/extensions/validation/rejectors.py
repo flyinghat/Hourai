@@ -39,18 +39,18 @@ class StringFilterRejector(Validator):
     def __init__(self, *, prefix, filters, full_match=False, subfield=None):
         self.prefix = prefix or ''
         self.filters = [(f, re.compile(generalize_filter(f))) for f in filters]
-        self.subfield = subfield or (lambda m: m.name)
+        self.subfield = subfield or (lambda _, m: (m.name,))
         if full_match:
             self.match_func = lambda r: r.match
         else:
             self.match_func = lambda r: r.search
-        print(self.filters)
 
     async def get_rejection_reasons(self, bot, member):
-        field_value = self.subfield(member)
+        field_values = tuple(self.subfield(bot, member))
         for filter_name, regex in self.filters:
-            if self.match_func(regex)(field_value):
-                yield self.prefix + 'Matches: `{}`'.format(filter_name)
+            for value in field_values:
+                if self.match_func(regex)(value):
+                    yield self.prefix + 'Matches: `{}`'.format(filter_name)
 
 
 class NewAccountRejector(Validator):
